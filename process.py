@@ -109,9 +109,9 @@ def action_func(q, sigma):
             result.pop()
         else:
             if result[-1][2] == '':
-                result[-1][1] == ''
+                result[-1][1] = ''
             else:
-                result[-1][2] == ''
+                result[-1][2] = ''
             back_again = True
     else:
         if q == 0:
