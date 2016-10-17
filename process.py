@@ -10,7 +10,7 @@ q02 = {'ㄱ': 6, 'ㄴ': 7, 'ㄷ': 10, 'ㄹ': 8, 'ㅁ': 10, 'ㅂ': 6, 'ㅅ': 10, 
 state = [0]
 result = []
 batchim = True
-back_again = False
+incomplete = []
 
 
 def eng_to_kor(eng):
@@ -22,14 +22,67 @@ def eng_to_kor(eng):
 
 def state_transition_func(q, sigma):
     global state
+    '''
     if sigma == '<':
-        if back_again:
-            del state[:]
-            state.append(0)
-            return 0
+        if not incomplete or result[-1][1] == '':
+            result.pop()
+            incomplete.pop()
         else:
-            state.pop()
-            return state[-1]
+            index_temp = 2 - incomplete[-1].count('')
+            result[-1][index_temp] = ''
+            incomplete[-1][index_temp] = ''
+    '''
+
+    if sigma == '<':
+        print('incomplete : ')
+        print(incomplete)
+        if incomplete:
+            # delete by part
+            # complex rollback
+            if result[-1][1] == '':
+                result.pop()
+                incomplete.pop()
+                if batchim:
+                    state = [0]
+                    return 0
+                else:
+                    state.pop()
+                    if not state:
+                        state = [0]
+                    return state[-1]
+            elif result[-1][2] == '' and len(result[-1][1]) == 1:
+                result[-1][1] = ''
+                incomplete[-1][1] = ''
+                state = [1]
+                return 1
+            elif result[-1][2] == '' and len(result[-1][1]) == 2:
+                result[-1][1] = result[-1][1][0]
+                incomplete[-1][1] = incomplete[-1][1][0]
+                state.pop()
+                if not state:
+                    state = [0]
+                return state[-1]
+            elif len(result[-1][2]) == 1:
+                result[-1][2] = ''
+                incomplete[-1][2] = ''
+                state.pop()
+                if not state:
+                    state = [0]
+                return state[-1]
+            elif len(result[-1][2]) == 2:
+                result[-1][2] = result[-1][2][0]
+                incomplete[-1][2] = incomplete[-1][2][0]
+                state.pop()
+                return state[-1]
+            else:
+                result[-1][1] = ''
+                incomplete[-1][1] = ''
+                state.pop()
+                return state[-1]
+        else:
+            result.pop()
+            state = [0]
+            return 0
     else:
         if q == 0:
             if sigma in consonants:
@@ -103,184 +156,290 @@ def state_transition_func(q, sigma):
 
 
 def action_func(q, sigma):
-    global back_again
-    print(q)
     if sigma == '<':
-        if back_again or (result[-1][1] == '' and result[-1][2] == ''):
-            result.pop()
-            # current problem : cannot tell between first chosung delete and second chosung delete
-            if result[-1][1] == '':
-                back_again = True
+        return
+    if q == 0:
+        if sigma in consonants:
+            result.append([sigma, '', ''])
+            incomplete.append([sigma, '', ''])
+            if batchim and len(incomplete) > 1:
+                incomplete.pop(-2)
+            elif not batchim and len(incomplete) > 2:
+                incomplete.pop(-3)
         else:
-            if result[-1][2] == '':
-                result[-1][1] = ''
+            return False
+    elif q == 1:
+        if sigma in consonants:
+            return False
+        else:
+            result[-1][1] = sigma
+            incomplete[-1][1] = sigma
+    elif q == 2:
+        if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
+            result.append([sigma, '', ''])
+            incomplete.append([sigma, '', ''])
+            if batchim and len(incomplete) > 1:
+                incomplete.pop(-2)
+            elif not batchim and len(incomplete) > 2:
+                incomplete.pop(-3)
+        elif sigma in consonants:
+            if batchim:
+                result[-1][2] = sigma  # batchim first
+                incomplete[-1][2] = sigma
             else:
-                result[-1][2] = ''
-    else:
-        if q == 0:
-            if sigma in consonants:
+                result.append([sigma, '', ''])  # chosung first
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 2:
+                    incomplete.pop(-3)
+        elif sigma in ['ㅏ', 'ㅣ', 'ㅐ']:
+            result[-1][1] = result[-1][1] + sigma
+            incomplete[-1][1] = incomplete[-1][1] + sigma
+        else:
+            return False
+    elif q == 3:
+        if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
+            result.append([sigma, '', ''])
+            incomplete.append([sigma, '', ''])
+            if batchim and len(incomplete) > 1:
+                incomplete.pop(-2)
+            elif not batchim and len(incomplete) > 2:
+                incomplete.pop(-3)
+        elif sigma in consonants:
+            if batchim:
+                result[-1][2] = sigma  # batchim first
+                incomplete[-1][2] = sigma
+            else:
+                result.append([sigma, '', ''])  # chosung first
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 2:
+                    incomplete.pop(-3)
+        elif sigma in ['ㅓ', 'ㅣ', 'ㅔ']:
+            result[-1][1] = result[-1][1] + sigma
+            incomplete[-1][1] = incomplete[-1][1] + sigma
+        else:
+            return False
+    elif q == 4:
+        if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
+            result.append([sigma, '', ''])
+            incomplete.append([sigma, '', ''])
+            if batchim and len(incomplete) > 1:
+                incomplete.pop(-2)
+            elif not batchim and len(incomplete) > 2:
+                incomplete.pop(-3)
+        elif sigma in consonants:
+            if batchim:
+                result[-1][2] = sigma  # batchim first
+                incomplete[-1][2] = sigma
+            else:
+                result.append([sigma, '', ''])  # chosung first
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 2:
+                    incomplete.pop(-3)
+        elif sigma == 'ㅣ':
+            result[-1][1] = result[-1][1] + sigma
+            incomplete[-1][1] = incomplete[-1][1] + sigma
+        else:
+            return False
+    elif q == 5:
+        if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
+            result.append([sigma, '', ''])
+            incomplete.append([sigma, '', ''])
+            if batchim and len(incomplete) > 1:
+                incomplete.pop(-2)
+            elif not batchim and len(incomplete) > 2:
+                incomplete.pop(-3)
+        elif sigma in consonants:
+            if batchim:
+                result[-1][2] = sigma  # batchim first
+                incomplete[-1][2] = sigma
+            else:
+                result.append([sigma, '', ''])  # chosung first
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 2:
+                    incomplete.pop(-3)
+        else:
+            return False
+    elif q == 6:
+        if sigma == 'ㅅ':
+            # batchim first
+            if batchim:
+                result[-1][2] = result[-1][2] + sigma
+                incomplete[-1][2] = incomplete[-1][2] + sigma
+            # chosung first
+            else:
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        elif sigma in consonants:
+            # batchim first
+            if batchim:
                 result.append([sigma, '', ''])
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+            # chosung first
             else:
-                return False
-        elif q == 1:
-            if sigma in consonants:
-                return False
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        else:
+            # batchim first
+            if batchim:
+                result.append([result[-1][2], sigma, ''])
+                result[-2][2] = ''
+                incomplete.append([incomplete[-1][2], sigma, ''])
+                incomplete[-2][2] = ''
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+            # chosung first
             else:
                 result[-1][1] = sigma
-        elif q == 2:
-            if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
+                incomplete[-1][1] = sigma
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+    elif q == 7:
+        if sigma in ['ㅈ', 'ㅎ']:
+            # batchim first
+            if batchim:
+                result[-1][2] = result[-1][2] + sigma
+                incomplete[-1][2] = incomplete[-1][2] + sigma
+            # chosung first
+            else:
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        elif sigma in consonants:
+            # batchim first
+            if batchim:
                 result.append([sigma, '', ''])
-            elif sigma in consonants:
-                if batchim:
-                    result[-1][2] = sigma  # batchim first
-                else:
-                    result.append([sigma, '', ''])  # chosung first
-            elif sigma in ['ㅏ', 'ㅣ', 'ㅐ']:
-                result[-1][1] = result[-1][1] + sigma
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
             else:
-                return False
-        elif q == 3:
-            if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
-                result.append([sigma, '', ''])
-            elif sigma in consonants:
-                if batchim:
-                    result[-1][2] = sigma  # batchim first
-                else:
-                    result.append([sigma, '', ''])  # chosung first
-            elif sigma in ['ㅓ', 'ㅣ', 'ㅔ']:
-                result[-1][1] = result[-1][1] + sigma
-            else:
-                return False
-        elif q == 4:
-            if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
-                result.append([sigma, '', ''])
-            elif sigma in consonants:
-                if batchim:
-                    result[-1][2] = sigma  # batchim first
-                else:
-                    result.append([sigma, '', ''])  # chosung first
-            elif sigma == 'ㅣ':
-                result[-1][1] = result[-1][1] + sigma
-            else:
-                return False
-        elif q == 5:
-            if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
-                result.append([sigma, '', ''])
-            elif sigma in consonants:
-                if batchim:
-                    result[-1][2] = sigma  # batchim first
-                else:
-                    result.append([sigma, '', ''])  # chosung first
-            else:
-                return False
-        elif q == 6:
-            if sigma == 'ㅅ':
-                # batchim first
-                if batchim:
-                    result[-1][2] = result[-1][2] + sigma
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            elif sigma in consonants:
-                # batchim first
-                if batchim:
-                    result.append([sigma, '', ''])
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            else:
-                # batchim first
-                if batchim:
-                    result.append([result[-1][2], sigma, ''])
-                    result[-2][2] = ''
-                # chosung first
-                else:
-                    result[-1][1] = sigma
-        elif q == 7:
-            if sigma in ['ㅈ', 'ㅎ']:
-                # batchim first
-                if batchim:
-                    result[-1][2] = result[-1][2] + sigma
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            elif sigma in consonants:
-                # batchim first
-                if batchim:
-                    result.append([sigma, '', ''])
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            else:
-                # batchim first
-                if batchim:
-                    result[-1][2] = ''
-                    result.append(['ㄴ', sigma, ''])
-                # chosung first
-                else:
-                    result[-1][1] = sigma
-        elif q == 8:
-            if sigma in ['ㄴ', 'ㄷ', 'ㄹ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ']:
-                # batchim first
-                if batchim:
-                    result.append([sigma, '', ''])
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            elif sigma in consonants:
-                # batchim first
-                if batchim:
-                    result[-1][2] = result[-1][2] + sigma
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            else:
-                # batchim first
-                if batchim:
-                    result[-1][2] = ''
-                    result.append(['ㄹ', sigma, ''])
-                # chosung first
-                else:
-                    result[-1][1] = sigma
-        elif q == 10:
-            if sigma in consonants:
-                # batchim first
-                if batchim:
-                    result.append([sigma, '', ''])
-                # chosung first
-                else:
-                    result[-2][2] = result[-1][0]
-                    result[-1][0] = sigma
-            else:
-                # batchim first
-                if batchim:
-                    result.append([result[-1][2][-1], sigma, ''])
-                    result[-2][2] = ''
-                # chosung first
-                else:
-                    result[-1][1] = sigma
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
         else:
-            if sigma in consonants:
-                # batchim first
-                if batchim:
-                    result.append([sigma, '', ''])
-                # chosung first
-                else:
-                    result[-2][2] = result[-2][2] + result[-1][0]
-                    result[-1][0] = sigma
+            # batchim first
+            if batchim:
+                result[-1][2] = ''
+                result.append(['ㄴ', sigma, ''])
+                incomplete[-1][2] = ''
+                incomplete.append(['ㄴ', sigma, ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
             else:
-                if batchim:
-                    result.append([result[-1][2][-1], sigma, ''])
-                    result[-2][2] = result[-2][2][0]
-                else:
-                    result[-1][1] = sigma
-        back_again = False
+                result[-1][1] = sigma
+                incomplete[-1][1] = sigma
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+    elif q == 8:
+        if sigma in ['ㄴ', 'ㄷ', 'ㄹ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ']:
+            # batchim first
+            if batchim:
+                result.append([sigma, '', ''])
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
+            else:
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        elif sigma in consonants:
+            # batchim first
+            if batchim:
+                result[-1][2] = result[-1][2] + sigma
+                incomplete[-1][2] = incomplete[-1][2] + sigma
+            # chosung first
+            else:
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        else:
+            # batchim first
+            if batchim:
+                result[-1][2] = ''
+                result.append(['ㄹ', sigma, ''])
+                incomplete[-1][2] = ''
+                incomplete.append(['ㄹ', sigma, ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
+            else:
+                result[-1][1] = sigma
+                incomplete[-1][1] = sigma
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+    elif q == 10:
+        if sigma in consonants:
+            # batchim first
+            if batchim:
+                result.append([sigma, '', ''])
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
+            else:
+                result[-2][2] = result[-1][0]
+                incomplete[-2][2] = incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        else:
+            # batchim first
+            if batchim:
+                result.append([result[-1][2][-1], sigma, ''])
+                result[-2][2] = ''
+                incomplete.append([incomplete[-1][2][-1], sigma, ''])
+                incomplete[-2][2] = ''
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
+            else:
+                result[-1][1] = sigma
+                incomplete[-1][1] = sigma
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+    else:
+        if sigma in consonants:
+            # batchim first
+            if batchim:
+                result.append([sigma, '', ''])
+                incomplete.append([sigma, '', ''])
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+                ###
+            # chosung first
+            else:
+                result[-2][2] = result[-2][2] + result[-1][0]
+                incomplete[-2][2] = incomplete[-2][2] + incomplete[-1][0]
+                result[-1][0] = sigma
+                incomplete[-1][0] = sigma
+        else:
+            if batchim:
+                result.append([result[-1][2][-1], sigma, ''])
+                result[-2][2] = result[-2][2][0]
+                incomplete.append([incomplete[-1][2][-1], sigma, ''])
+                incomplete[-2][2] = incomplete[-2][2][0]
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
+            else:
+                result[-1][1] = sigma
+                incomplete[-1][1] = sigma
 
 if len(sys.argv) == 2 and (sys.argv[1] == '--chosung' or sys.argv[1] == '-c'):
     batchim = False
@@ -303,7 +462,6 @@ while True:
                 action_func(current_state, letter)
                 current_state = state_transition_func(current_state, letter)
 
-            print(result)
             for geulja in result:
                 if geulja[1] == '' and geulja[2] == '':
                     print(geulja[0], end='')
