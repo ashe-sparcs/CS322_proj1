@@ -22,6 +22,7 @@ def eng_to_kor(eng):
 
 def state_transition_func(q, sigma):
     global state
+    print(q)
     '''
     if sigma == '<':
         if not incomplete or result[-1][1] == '':
@@ -59,15 +60,11 @@ def state_transition_func(q, sigma):
                 result[-1][1] = result[-1][1][0]
                 incomplete[-1][1] = incomplete[-1][1][0]
                 state.pop()
-                if not state:
-                    state = [0]
                 return state[-1]
             elif len(result[-1][2]) == 1:
                 result[-1][2] = ''
                 incomplete[-1][2] = ''
                 state.pop()
-                if not state:
-                    state = [0]
                 return state[-1]
             elif len(result[-1][2]) == 2:
                 result[-1][2] = result[-1][2][0]
@@ -75,14 +72,18 @@ def state_transition_func(q, sigma):
                 state.pop()
                 return state[-1]
             else:
+                print('what the fuck?')
+                '''
                 result[-1][1] = ''
                 incomplete[-1][1] = ''
                 state.pop()
                 return state[-1]
+                '''
         else:
             result.pop()
             state = [0]
             return 0
+
     else:
         if q == 0:
             if sigma in consonants:
@@ -174,6 +175,8 @@ def action_func(q, sigma):
         else:
             result[-1][1] = sigma
             incomplete[-1][1] = sigma
+            if not batchim and len(incomplete) > 1:
+                incomplete.pop(-2)
     elif q == 2:
         if sigma in ['ㄸ', 'ㅃ', 'ㅉ']:
             result.append([sigma, '', ''])
@@ -440,6 +443,8 @@ def action_func(q, sigma):
             else:
                 result[-1][1] = sigma
                 incomplete[-1][1] = sigma
+                if len(incomplete) > 1:
+                    incomplete.pop(-2)
 
 if len(sys.argv) == 2 and (sys.argv[1] == '--chosung' or sys.argv[1] == '-c'):
     batchim = False
