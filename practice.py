@@ -146,8 +146,8 @@ def action_func(q, sigma):
             ##
         else:
             # batchim first
-            result[-1][2] = ''
-            result.append(['ㄱ', sigma, ''])
+            result.append([result[-1][2], sigma, ''])
+            result[-2][2] = ''
             # chosung first
             #result[-1][1] = sigma
     elif q == 7:
@@ -209,8 +209,8 @@ def action_func(q, sigma):
             # chosung first
             #result[-1][1] = sigma
 
-while True:
-    if len(sys.argv) == 1:
+if len(sys.argv) == 1:
+    while True:
         try:
             eng_in = input()
             kor_in = []
@@ -233,29 +233,26 @@ while True:
             result = []
         except:
             break
-    elif len(sys.argv) == 2:
-        f = open(sys.argv[1], 'r')
-        for line in f.readlines():
-            eng_in = line.rstrip()
-            kor_in = []
+elif len(sys.argv) == 2:
+    f = open(sys.argv[1], 'r')
+    lines = f.readlines()
+    for line in lines:
+        eng_in = line.rstrip()
+        kor_in = []
 
-            for letter in eng_in:
-                kor_in.append(eng_to_kor(letter))
+        for letter in eng_in:
+            kor_in.append(eng_to_kor(letter))
 
-            q = 0
-            for letter in kor_in:
-                action_func(q, letter)
-                q = state_transition_func(q, letter)
-            #print(kor_in)
-            #print(result)
-            for geulja in result:
-                if geulja[1] == '' and geulja[2] == '':
-                    print(geulja[0], end='')
-                else:
-                    print(chr(44032 + 588 * consonants.index(geulja[0]) + 28 * jung.index(geulja[1]) + jong.index(geulja[2])), end=''),
-            print('')
-            result = []
-            
-
-
-
+        q = 0
+        for letter in kor_in:
+            action_func(q, letter)
+            q = state_transition_func(q, letter)
+        #print(kor_in)
+        #print(result)
+        for geulja in result:
+            if geulja[1] == '' and geulja[2] == '':
+                print(geulja[0], end='')
+            else:
+                print(chr(44032 + 588 * consonants.index(geulja[0]) + 28 * jung.index(geulja[1]) + jong.index(geulja[2])), end=''),
+        print('')
+        result = []
