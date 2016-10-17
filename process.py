@@ -104,15 +104,18 @@ def state_transition_func(q, sigma):
 
 def action_func(q, sigma):
     global back_again
+    print(q)
     if sigma == '<':
         if back_again or (result[-1][1] == '' and result[-1][2] == ''):
             result.pop()
+            # current problem : cannot tell between first chosung delete and second chosung delete
+            if result[-1][1] == '':
+                back_again = True
         else:
             if result[-1][2] == '':
                 result[-1][1] = ''
             else:
                 result[-1][2] = ''
-            back_again = True
     else:
         if q == 0:
             if sigma in consonants:
@@ -272,8 +275,11 @@ def action_func(q, sigma):
                     result[-2][2] = result[-2][2] + result[-1][0]
                     result[-1][0] = sigma
             else:
-                result.append([result[-1][2][-1], sigma, ''])
-                result[-2][2] = result[-2][2][0]
+                if batchim:
+                    result.append([result[-1][2][-1], sigma, ''])
+                    result[-2][2] = result[-2][2][0]
+                else:
+                    result[-1][1] = sigma
         back_again = False
 
 if len(sys.argv) == 2 and (sys.argv[1] == '--chosung' or sys.argv[1] == '-c'):
