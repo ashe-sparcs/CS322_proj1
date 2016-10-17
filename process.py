@@ -22,21 +22,7 @@ def eng_to_kor(eng):
 
 def state_transition_func(q, sigma):
     global state
-    print(q)
-    '''
     if sigma == '<':
-        if not incomplete or result[-1][1] == '':
-            result.pop()
-            incomplete.pop()
-        else:
-            index_temp = 2 - incomplete[-1].count('')
-            result[-1][index_temp] = ''
-            incomplete[-1][index_temp] = ''
-    '''
-
-    if sigma == '<':
-        print('incomplete : ')
-        print(incomplete)
         if incomplete:
             # delete by part
             # complex rollback
@@ -71,14 +57,6 @@ def state_transition_func(q, sigma):
                 incomplete[-1][2] = incomplete[-1][2][0]
                 state.pop()
                 return state[-1]
-            else:
-                print('what the fuck?')
-                '''
-                result[-1][1] = ''
-                incomplete[-1][1] = ''
-                state.pop()
-                return state[-1]
-                '''
         else:
             result.pop()
             state = [0]
@@ -475,6 +453,5 @@ while True:
             print('')
             result = []
     except:
-        traceback.print_exc()
         print('exit')
         break
