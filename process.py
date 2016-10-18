@@ -1,9 +1,8 @@
-import sys
-import traceback
 consonants = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
 jung = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅗㅏ', 'ㅗㅐ', 'ㅗㅣ', 'ㅛ', 'ㅜ', 'ㅜㅓ', 'ㅜㅔ', 'ㅜㅣ', 'ㅠ', 'ㅡ', 'ㅡㅣ', 'ㅣ']
-# jung = ['ㅏ', 'ㅐ' 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ']
+jung_double = []
 jong = ['', 'ㄱ', 'ㄲ', 'ㄱㅅ', 'ㄴ', 'ㄴㅈ', 'ㄴㅎ', 'ㄷ', 'ㄹ', 'ㄹㄱ', 'ㄹㅁ', 'ㄹㅂ', 'ㄹㅅ', 'ㄹㅌ', 'ㄹㅍ', 'ㄹㅎ', 'ㅁ', 'ㅂ', 'ㅂㅅ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ',  'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
+jong_double = ['ㄱㅅ', 'ㄴㅈ', 'ㄴㅎ', 'ㄹㄱ', 'ㄹㅁ', 'ㄹㅂ', 'ㄹㅅ', 'ㄹㅌ', 'ㄹㅍ', 'ㄹㅎ','ㅂㅅ']
 eng_kor_map = {'a': 'ㅁ', 'b': 'ㅠ', 'c': 'ㅊ', 'd': 'ㅇ', 'e': 'ㄷ', 'f': 'ㄹ', 'g': 'ㅎ', 'h': 'ㅗ', 'i': 'ㅑ', 'j': 'ㅓ', 'k': 'ㅏ', 'l': 'ㅣ', 'm': 'ㅡ', 'n': 'ㅜ', 'o': 'ㅐ', 'p': 'ㅔ', 'q': 'ㅂ', 'r': 'ㄱ', 's': 'ㄴ', 't': 'ㅅ', 'u': 'ㅕ', 'v': 'ㅍ', 'w': 'ㅈ', 'x': 'ㅌ', 'y': 'ㅛ', 'z': 'ㅋ', 'Q': 'ㅃ', 'W': 'ㅉ', 'E': 'ㄸ', 'R': 'ㄲ', 'T': 'ㅆ', 'O': 'ㅒ', 'P': 'ㅖ'}
 q01 = {'ㄱ': False, 'ㄴ': False, 'ㄷ': False, 'ㄹ': False, 'ㅁ': False, 'ㅂ': False, 'ㅅ': False, 'ㅇ': False, 'ㅈ': False, 'ㅊ': False, 'ㅋ': False, 'ㅌ': False, 'ㅍ': False, 'ㅎ': False, 'ㄲ': False, 'ㄸ': False, 'ㅃ': False, 'ㅆ': False, 'ㅉ': False, 'ㅏ': 4, 'ㅑ': 4, 'ㅐ': 5, 'ㅒ': 5, 'ㅓ': 4, 'ㅕ': 4, 'ㅔ': 5, 'ㅖ': 5, 'ㅗ': 2, 'ㅛ': 5, 'ㅜ': 3, 'ㅠ': 5, 'ㅡ': 4, 'ㅣ': 5}
 q02 = {'ㄱ': 6, 'ㄴ': 7, 'ㄷ': 10, 'ㄹ': 8, 'ㅁ': 10, 'ㅂ': 6, 'ㅅ': 10, 'ㅇ': 10, 'ㅈ': 10, 'ㅊ': 10, 'ㅋ': 10, 'ㅌ': 10, 'ㅍ': 10, 'ㅎ': 10, 'ㄲ': 10, 'ㄸ': 1, 'ㅃ': 1, 'ㅆ': 10, 'ㅉ': 1, 'ㅏ': 4, 'ㅑ': False, 'ㅐ': False, 'ㅒ': False, 'ㅓ': False, 'ㅕ': False, 'ㅔ': False, 'ㅖ': False, 'ㅗ': False, 'ㅛ': False, 'ㅜ': False, 'ㅠ': False, 'ㅡ': False, 'ㅣ': 5}
@@ -337,6 +336,8 @@ def action_func(q, sigma):
                 incomplete[-2][2] = incomplete[-1][0]
                 result[-1][0] = sigma
                 incomplete[-1][0] = sigma
+                if not incomplete[-2][2] + incomplete[-1][0] in jong:
+                    incomplete.pop(-2)
         elif sigma in consonants:
             # batchim first
             if batchim:
@@ -424,8 +425,15 @@ def action_func(q, sigma):
                 if len(incomplete) > 1:
                     incomplete.pop(-2)
 
-if len(sys.argv) == 2 and (sys.argv[1] == '--chosung' or sys.argv[1] == '-c'):
+print('batchim(b) first or chosung(c) first?')
+first = input()
+if first == 'b':
+    pass
+elif first == 'c':
     batchim = False
+else:
+    print('you entered WRONG character. batchim(b) first or chosung(c) first?')
+    first = input()
 
 while True:
     try:
@@ -452,6 +460,7 @@ while True:
                     print(chr(44032 + 588 * consonants.index(geulja[0]) + 28 * jung.index(geulja[1]) + jong.index(geulja[2])), end=''),
             print('')
             result = []
+            incomplete = []
     except:
         print('exit')
         break
