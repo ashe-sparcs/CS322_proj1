@@ -425,7 +425,7 @@ def action_func(q, sigma):
                 if len(incomplete) > 1:
                     incomplete.pop(-2)
 
-print('batchim(b) first or chosung(c) first?')
+print('batchim first(enter b) or chosung first(enter c)?')
 first = input()
 if first == 'b':
     pass
